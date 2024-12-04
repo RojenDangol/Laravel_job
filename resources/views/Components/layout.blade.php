@@ -30,8 +30,14 @@
               <x-nav-link href="/login" :active="request()->is('login')">Log In</x-nav-link>
               <x-nav-link href="/register" :active="request()->is('register')">Register</x-nav-link>
             @endguest
+            @auth               
+            <form method="POST" action="/logout">
+              @csrf
+              <x-form-button>Logout</x-form-button>
+            </form>
+            @endauth            
           </div>
-        </div>
+        </div> 
         <div class="-mr-2 flex md:hidden">
           <!-- Mobile menu button -->
           <button type="button" class="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" aria-controls="mobile-menu" aria-expanded="false">
