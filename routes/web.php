@@ -1,91 +1,29 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Models\Job;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\SessionController;
+use App\Http\Controllers\RegisterUserController;
 
-Route::get('/', function () {
-    return view('home');
-});
+Route::view('/', 'home');
+Route::view('/contact', 'contact');
 
-// index:displays all job
-Route::get('/jobs', function(){
-    $jobs = Job::with('employer')->latest()->simplePaginate(3);
-    
-    return view('jobs.index', [               
-        'jobs' =>  $jobs
-    ]);
-});
+// Route::controller(JobController::class)->group(function(){
+//     Route::get('/jobs', 'index');
+//     Route::get('/jobs/create', 'create');
+//     Route::get('/jobs/{job}', 'show');
+//     Route::post('/jobs', 'store');
+//     Route::get('/jobs/{job}/edit', 'edit');
+//     Route::patch('/jobs/{job}', 'update');
+//     Route::delete('/jobs/{job}', 'destroy');
+// });
 
-// create job
-Route::get('/jobs/create', function () {
-    return view('jobs.create');
-});
+Route::resource('jobs', JobController::class);
 
-// Show job
-Route::get('/jobs/{id}', function($id){
 
-    $job = Job::find($id);
+Route::get('/register',[RegisterUserController::class, 'create']);
+Route::post('/register',[RegisterUserController::class, 'store']);
 
-    // dd($jobs);
-    return view('jobs.show', ['job' => $job]);
-});
-
-// Store job in db
-Route::post('/jobs', function () {
-    // dd('Hello from post request');
-    // validating the form request
-    request()->validate([
-        'title'=>['required', 'min:3'],
-        'salary'=>['required'],
-    ]);
-
-    Job::create([
-        'title'=> request('title'),
-        'salary'=> request('salary'),
-        'employer_id'=> 1,
-    ]);
-
-    return redirect('/jobs'); 
-
-});
-
-// Edit job
-Route::get('/jobs/{id}/edit', function($id){
-    $job = Job::find($id);
-
-    return view('jobs.edit', ['job' => $job]);
-});
-
-// Update job
-Route::patch('/jobs/{id}', function($id){
-    // validate
-    request()->validate([
-        'title'=>['required', 'min:3'],
-        'salary'=>['required'],
-    ]);
-
-    // updaate the job
-    $job = Job::findOrFail($id);
-
-    $job->update([
-        'title'=>request('title'),
-        'salary'=>request('salary'),
-    ]);
-
-    return redirect('jobs/'.$job->id);
-});
-
-// Destroy job
-Route::delete('/jobs/{id}', function($id){
-
-    // delete the job
-    $job = Job::findOrFail($id);
-    $job->delete();
-
-    return redirect('/jobs');
-    
-});
-
-Route::get('/contact', function(){
-    return view('contact');
-});
+Route::get('/login',[SessionController::class, 'create']);
+Route::post('/login',[SessionController::class, 'store']);
